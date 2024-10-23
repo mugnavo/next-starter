@@ -1,95 +1,126 @@
-import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { Lucia, type Session, type User } from "lucia";
+import { sha256 } from "@oslojs/crypto/sha2";
+import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
+import { Discord, Facebook, GitHub, Google } from "arctic";
+import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { cache } from "react";
-
-import { Facebook, GitHub, Google } from "arctic";
 
 import { db } from "~/lib/db";
 import {
+  type Session,
   session as sessionTable,
   user as userTable,
-  type User as DatabaseUser,
 } from "~/lib/db/schema";
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessionTable, userTable);
+export const SESSION_COOKIE_NAME = "session";
 
-export const lucia = new Lucia(adapter, {
-  sessionCookie: {
-    attributes: {
-      secure: process.env.NODE_ENV === "production",
-    },
-  },
-  getUserAttributes: (attr) => ({
-    id: attr.id,
-    name: attr.name,
-    firstName: attr.firstName,
-    lastName: attr.lastName,
-    avatarUrl: attr.avatarUrl,
-    email: attr.email,
-  }),
-});
-
-declare module "lucia" {
-  interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: DatabaseUser;
-  }
+export function generateSessionToken(): string {
+  const bytes = new Uint8Array(20);
+  crypto.getRandomValues(bytes);
+  return encodeBase32LowerCaseNoPadding(bytes);
 }
 
+export async function createSession(token: string, userId: number): Promise<Session> {
+  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  const session: Session = {
+    id: sessionId,
+    user_id: userId,
+    expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+  };
+  await db.insert(sessionTable).values(session);
+  return session;
+}
+
+export async function validateSessionToken(token: string) {
+  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  const result = await db
+    .select({ user: userTable, session: sessionTable })
+    .from(sessionTable)
+    .innerJoin(userTable, eq(sessionTable.user_id, userTable.id))
+    .where(eq(sessionTable.id, sessionId));
+  if (result.length < 1) {
+    return { session: null, user: null };
+  }
+  const { user, session } = result[0];
+  if (Date.now() >= session.expires_at.getTime()) {
+    await db.delete(sessionTable).where(eq(sessionTable.id, session.id));
+    return { session: null, user: null };
+  }
+  if (Date.now() >= session.expires_at.getTime() - 1000 * 60 * 60 * 24 * 15) {
+    session.expires_at = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+    await db
+      .update(sessionTable)
+      .set({
+        expires_at: session.expires_at,
+      })
+      .where(eq(sessionTable.id, session.id));
+  }
+
+  // Only return the necessary user data for the client
+  const filteredUser = {
+    id: user.id,
+    name: user.name,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    avatar_url: user.avatar_url,
+    email: user.email,
+  };
+
+  return { session, user: filteredUser };
+}
+
+export async function invalidateSession(sessionId: string): Promise<void> {
+  await db.delete(sessionTable).where(eq(sessionTable.id, sessionId));
+}
+
+export async function setSessionTokenCookie(token: string, expiresAt: Date) {
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    expires: expiresAt,
+    path: "/",
+  });
+}
+
+export const getAuthSession = cache(async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value ?? null;
+  if (!token) {
+    return { session: null, user: null };
+  }
+  const { session, user } = await validateSessionToken(token);
+
+  if (!session) {
+    try {
+      // this only works on server actions & route handlers
+      cookieStore.delete(SESSION_COOKIE_NAME);
+    } catch {}
+    return { session: null, user: null };
+  }
+
+  return { session, user };
+});
+
 // OAuth2 Providers
+export const discord = new Discord(
+  process.env.DISCORD_CLIENT_ID as string,
+  process.env.DISCORD_CLIENT_SECRET as string,
+  process.env.DISCORD_REDIRECT_URI as string
+);
 export const facebook = new Facebook(
-  process.env.FACEBOOK_CLIENT_ID!,
-  process.env.FACEBOOK_CLIENT_SECRET!,
-  process.env.FACEBOOK_REDIRECT_URI!
+  process.env.FACEBOOK_CLIENT_ID as string,
+  process.env.FACEBOOK_CLIENT_SECRET as string,
+  process.env.FACEBOOK_REDIRECT_URI as string
 );
 export const github = new GitHub(
-  process.env.GITHUB_CLIENT_ID!,
-  process.env.GITHUB_CLIENT_SECRET!,
+  process.env.GITHUB_CLIENT_ID as string,
+  process.env.GITHUB_CLIENT_SECRET as string,
   process.env.GITHUB_REDIRECT_URI || null
 );
 export const google = new Google(
-  process.env.GOOGLE_CLIENT_ID!,
-  process.env.GOOGLE_CLIENT_SECRET!,
-  process.env.GOOGLE_REDIRECT_URI!
+  process.env.GOOGLE_CLIENT_ID as string,
+  process.env.GOOGLE_CLIENT_SECRET as string,
+  process.env.GOOGLE_REDIRECT_URI as string
 );
-
-export const validateRequest = cache(
-  async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
-    const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
-    if (!sessionId) {
-      return {
-        user: null,
-        session: null,
-      };
-    }
-
-    const result = await lucia.validateSession(sessionId);
-    // next.js throws when you attempt to set cookie when rendering page
-    try {
-      if (result.session && result.session.fresh) {
-        const sessionCookie = lucia.createSessionCookie(result.session.id);
-        cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-      }
-      if (!result.session) {
-        const sessionCookie = lucia.createBlankSessionCookie();
-        cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-      }
-    } catch {}
-    return result;
-  }
-);
-
-/**
- * Redirects the user based on their authentication status
- *
- * @param { boolean } authenticated - If the user is authenticated
- * @param { string } redirectTo - The path to redirect to
- */
-export async function redirectIfAuth(authenticated: boolean, redirectTo: string) {
-  const { user } = await validateRequest();
-  if (authenticated === !!user) {
-    return redirect(redirectTo);
-  }
-}

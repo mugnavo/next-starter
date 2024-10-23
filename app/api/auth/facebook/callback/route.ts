@@ -1,9 +1,13 @@
 import { OAuth2RequestError } from "arctic";
 import { and, eq } from "drizzle-orm";
-import { generateIdFromEntropySize } from "lucia";
 import { cookies } from "next/headers";
 
-import { facebook, lucia, redirectIfAuth } from "~/lib/auth";
+import {
+  createSession,
+  facebook,
+  generateSessionToken,
+  setSessionTokenCookie,
+} from "~/lib/auth";
 import { db } from "~/lib/db";
 import { oauthAccount, user } from "~/lib/db/schema";
 
@@ -23,15 +27,14 @@ export async function GET(request: Request): Promise<Response> {
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 
-  const storedState = cookies().get("facebook_oauth_state")?.value ?? null;
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get("facebook_oauth_state")?.value ?? null;
 
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
       status: 400,
     });
   }
-
-  await redirectIfAuth(true, "/dashboard");
 
   try {
     const tokens = await facebook.validateAuthorizationCode(code);
@@ -46,8 +49,8 @@ export async function GET(request: Request): Promise<Response> {
 
     const existingUser = await db.query.oauthAccount.findFirst({
       where: and(
-        eq(oauthAccount.providerId, "facebook"),
-        eq(oauthAccount.providerUserId, facebookUser.id)
+        eq(oauthAccount.provider_id, "facebook"),
+        eq(oauthAccount.provider_user_id, facebookUser.id)
       ),
     });
 
@@ -58,9 +61,9 @@ export async function GET(request: Request): Promise<Response> {
      */
 
     if (existingUser) {
-      const session = await lucia.createSession(existingUser.userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+      const token = generateSessionToken();
+      const session = await createSession(token, existingUser.user_id);
+      await setSessionTokenCookie(token, session.expires_at);
       return new Response(null, {
         status: 302,
         headers: {
@@ -69,25 +72,28 @@ export async function GET(request: Request): Promise<Response> {
       });
     }
 
-    const userId = generateIdFromEntropySize(10); // 16 characters
-
-    await db.transaction(async (tx) => {
-      await tx.insert(user).values({
-        id: userId,
-        email: facebookUser.email,
-        name: facebookUser.name,
-        firstName: facebookUser.first_name,
-        lastName: facebookUser.last_name,
-        avatarUrl: facebookUser.picture.data.url,
+    const userId = await db.transaction(async (tx) => {
+      const [{ newId }] = await tx
+        .insert(user)
+        .values({
+          email: facebookUser.email,
+          name: facebookUser.name,
+          first_name: facebookUser.first_name,
+          last_name: facebookUser.last_name,
+          avatar_url: facebookUser.picture.data.url,
+        })
+        .returning({ newId: user.id });
+      await tx.insert(oauthAccount).values({
+        provider_id: "facebook",
+        provider_user_id: facebookUser.id,
+        user_id: newId,
       });
-      await tx
-        .insert(oauthAccount)
-        .values({ providerId: "facebook", providerUserId: facebookUser.id, userId });
+      return newId;
     });
 
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    const token = generateSessionToken();
+    const session = await createSession(token, userId);
+    await setSessionTokenCookie(token, session.expires_at);
     return new Response(null, {
       status: 302,
       headers: {

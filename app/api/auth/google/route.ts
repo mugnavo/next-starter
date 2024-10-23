@@ -13,15 +13,15 @@ export async function GET(): Promise<Response> {
     "email",
   ]);
 
-  cookies().set("google_oauth_state", state, {
+  const cookieStore = await cookies();
+  cookieStore.set("google_oauth_state", state, {
     path: "/",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 60 * 10,
     sameSite: "lax",
   });
-
-  cookies().set("google_code_verifier", codeVerifier, {
+  cookieStore.set("google_code_verifier", codeVerifier, {
     path: "/",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,

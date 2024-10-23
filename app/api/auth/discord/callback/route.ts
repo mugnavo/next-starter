@@ -4,20 +4,20 @@ import { cookies } from "next/headers";
 
 import {
   createSession,
+  discord,
   generateSessionToken,
-  github,
   setSessionTokenCookie,
 } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { oauthAccount, user } from "~/lib/db/schema";
 
-interface GitHubUser {
+interface DiscordUser {
   id: string;
-  name: string | null;
+  username: string;
+  global_name?: string;
+  avatar?: string;
   email: string;
-  avatar_url: string;
-  location: string | null;
-  login: string;
+  verified: boolean;
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -26,7 +26,7 @@ export async function GET(request: Request): Promise<Response> {
   const state = url.searchParams.get("state");
 
   const cookieStore = await cookies();
-  const storedState = cookieStore.get("github_oauth_state")?.value ?? null;
+  const storedState = cookieStore.get("discord_oauth_state")?.value ?? null;
 
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
@@ -35,18 +35,18 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   try {
-    const tokens = await github.validateAuthorizationCode(code);
-    const githubUserResponse = await fetch("https://api.github.com/user", {
+    const tokens = await discord.validateAuthorizationCode(code);
+    const discordUserResponse = await fetch("https://discord.com/api/v10/users/@me", {
       headers: {
         Authorization: `Bearer ${tokens.accessToken()}`,
       },
     });
-    const githubUser: GitHubUser = await githubUserResponse.json();
+    const discordUser: DiscordUser = await discordUserResponse.json();
 
     const existingUser = await db.query.oauthAccount.findFirst({
       where: and(
-        eq(oauthAccount.provider_id, "github"),
-        eq(oauthAccount.provider_user_id, githubUser.id)
+        eq(oauthAccount.provider_id, "discord"),
+        eq(oauthAccount.provider_user_id, discordUser.id)
       ),
     });
 
@@ -72,14 +72,16 @@ export async function GET(request: Request): Promise<Response> {
       const [{ newId }] = await tx
         .insert(user)
         .values({
-          email: githubUser.email,
-          name: githubUser.name || githubUser.login,
-          avatar_url: githubUser.avatar_url,
+          email: discordUser.email,
+          name: discordUser.global_name || discordUser.username,
+          avatar_url: discordUser.avatar
+            ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`
+            : null,
         })
         .returning({ newId: user.id });
       await tx.insert(oauthAccount).values({
-        provider_id: "github",
-        provider_user_id: githubUser.id,
+        provider_id: "discord",
+        provider_user_id: discordUser.id,
         user_id: newId,
       });
       return newId;

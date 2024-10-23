@@ -11,8 +11,8 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "Mugnavo SaaS",
-  description: "Starter kit for SaaS applications",
+  title: "Mugnavo Next.js Starter",
+  description: "Minimal Next.js starter kit",
 };
 
 export default function RootLayout({

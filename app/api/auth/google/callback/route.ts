@@ -1,9 +1,13 @@
 import { OAuth2RequestError } from "arctic";
 import { and, eq } from "drizzle-orm";
-import { generateIdFromEntropySize } from "lucia";
 import { cookies } from "next/headers";
 
-import { google, lucia, redirectIfAuth } from "~/lib/auth";
+import {
+  createSession,
+  generateSessionToken,
+  google,
+  setSessionTokenCookie,
+} from "~/lib/auth";
 import { db } from "~/lib/db";
 import { oauthAccount, user } from "~/lib/db/schema";
 
@@ -23,16 +27,15 @@ export async function GET(request: Request): Promise<Response> {
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 
-  const storedState = cookies().get("google_oauth_state")?.value ?? null;
-  const storedCodeVerifier = cookies().get("google_code_verifier")?.value ?? null;
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get("google_oauth_state")?.value ?? null;
+  const storedCodeVerifier = cookieStore.get("google_code_verifier")?.value ?? null;
 
   if (!code || !state || !storedState || !storedCodeVerifier || state !== storedState) {
     return new Response(null, {
       status: 400,
     });
   }
-
-  await redirectIfAuth(true, "/dashboard");
 
   try {
     const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
@@ -45,8 +48,8 @@ export async function GET(request: Request): Promise<Response> {
 
     const existingUser = await db.query.oauthAccount.findFirst({
       where: and(
-        eq(oauthAccount.providerId, "google"),
-        eq(oauthAccount.providerUserId, googleUser.sub)
+        eq(oauthAccount.provider_id, "google"),
+        eq(oauthAccount.provider_user_id, googleUser.sub)
       ),
     });
 
@@ -57,9 +60,9 @@ export async function GET(request: Request): Promise<Response> {
      */
 
     if (existingUser) {
-      const session = await lucia.createSession(existingUser.userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+      const token = generateSessionToken();
+      const session = await createSession(token, existingUser.user_id);
+      await setSessionTokenCookie(token, session.expires_at);
       return new Response(null, {
         status: 302,
         headers: {
@@ -68,25 +71,28 @@ export async function GET(request: Request): Promise<Response> {
       });
     }
 
-    const userId = generateIdFromEntropySize(10); // 16 characters
-
-    await db.transaction(async (tx) => {
-      await tx.insert(user).values({
-        id: userId,
-        email: googleUser.email,
-        name: googleUser.name,
-        firstName: googleUser.given_name,
-        lastName: googleUser.family_name,
-        avatarUrl: googleUser.picture,
+    const userId = await db.transaction(async (tx) => {
+      const [{ newId }] = await tx
+        .insert(user)
+        .values({
+          email: googleUser.email,
+          name: googleUser.name,
+          first_name: googleUser.given_name,
+          last_name: googleUser.family_name,
+          avatar_url: googleUser.picture,
+        })
+        .returning({ newId: user.id });
+      await tx.insert(oauthAccount).values({
+        provider_id: "google",
+        provider_user_id: googleUser.sub,
+        user_id: newId,
       });
-      await tx
-        .insert(oauthAccount)
-        .values({ providerId: "google", providerUserId: googleUser.sub, userId });
+      return newId;
     });
 
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    const token = generateSessionToken();
+    const session = await createSession(token, userId);
+    await setSessionTokenCookie(token, session.expires_at);
     return new Response(null, {
       status: 302,
       headers: {

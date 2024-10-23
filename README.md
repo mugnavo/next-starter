@@ -1,6 +1,6 @@
-# mugnavo/saas
+# mugnavo/next-starter
 
-Starter kit for SaaS applications.
+Minimal Next.js starter kit.
 
 > [!NOTE]  
 > **Work in progress.**
@@ -9,7 +9,6 @@ Starter kit for SaaS applications.
 >
 > TODO:
 >
-> - Starter pages & dashboard styled with shadcn/ui
 > - Payment gateways (see below)
 > - Email & SMS providers
 > - Logging
@@ -22,7 +21,7 @@ Core:
 - [Next.js](https://nextjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
 - [Drizzle ORM](https://orm.drizzle.team/) + PostgreSQL
-- [Lucia](https://lucia-auth.com/)
+- Auth based on [Lucia](https://lucia-auth.com/)
 - [pnpm](https://pnpm.io/)
 - [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
 
@@ -31,6 +30,7 @@ Auth providers:
 - [x] Facebook
 - [x] GitHub
 - [x] Google
+- [x] Discord
 - [ ] Email (magic links/OTP)
 
 Payment gateways:

@@ -1,21 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
-import { validateRequest } from "~/lib/auth";
+import { getAuthSession } from "~/lib/auth";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await validateRequest();
+  const { user } = await getAuthSession();
   // Protected layout, redirect if not authenticated
 
   if (!user) {
     return redirect("/signin");
   }
-  // or
-  // await redirectIfAuth(false, "/signin");
 
   return (
     <div className="flex flex-col gap-4 p-4">

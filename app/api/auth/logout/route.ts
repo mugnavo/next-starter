@@ -1,9 +1,15 @@
 import { cookies } from "next/headers";
 
-import { lucia, validateRequest } from "~/lib/auth";
+import { getAuthSession, invalidateSession, SESSION_COOKIE_NAME } from "~/lib/auth";
 
-export async function GET() {
-  const { session } = await validateRequest();
+export async function POST() {
+  const { session } = await getAuthSession();
+
+  const cookieStore = await cookies();
+  if (cookieStore.get(SESSION_COOKIE_NAME)) {
+    cookieStore.delete(SESSION_COOKIE_NAME);
+  }
+
   if (!session) {
     return new Response(null, {
       status: 401,
@@ -13,10 +19,7 @@ export async function GET() {
     });
   }
 
-  await lucia.invalidateSession(session.id);
-
-  const sessionCookie = lucia.createBlankSessionCookie();
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  await invalidateSession(session.id);
 
   return new Response(null, {
     status: 302,

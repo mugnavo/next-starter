@@ -8,7 +8,8 @@ export async function GET(): Promise<Response> {
 
   const url = github.createAuthorizationURL(state, ["user:email"]);
 
-  cookies().set("github_oauth_state", state, {
+  const cookieStore = await cookies();
+  cookieStore.set("github_oauth_state", state, {
     path: "/",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
