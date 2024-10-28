@@ -23,14 +23,6 @@ export default async function AuthPage() {
           >
             Sign in with Discord
           </Button>
-          <Button
-            formAction="/api/auth/facebook"
-            type="submit"
-            variant="outline"
-            size="lg"
-          >
-            Sign in with Facebook
-          </Button>
           <Button formAction="/api/auth/github" type="submit" variant="outline" size="lg">
             Sign in with GitHub
           </Button>

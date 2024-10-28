@@ -13,7 +13,6 @@
     "**/node_modules": true,
     "next-env.d.ts": true,
 
-    "pnpm-lock.yaml": true,
     ".editorconfig": true,
     ".eslintrc.json": true,
     ".gitattributes": true,
