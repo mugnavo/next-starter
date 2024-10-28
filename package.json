@@ -27,15 +27,15 @@
     "drizzle-orm": "^0.35.3",
     "lucide-react": "^0.453.0",
     "next": "^15.0.1",
-    "postgres": "^3.4.4",
+    "postgres": "^3.4.5",
     "react": "rc",
     "react-dom": "rc",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/node": "^22.7.8",
-    "@types/react": "^18.3.11",
+    "@types/node": "^22.8.1",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.26.2",
