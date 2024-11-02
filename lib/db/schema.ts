@@ -3,8 +3,8 @@ import { integer, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-co
 export const user = pgTable("user", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: text(),
-  first_name: text(),
-  last_name: text(),
+  // first_name: text(),
+  // last_name: text(),
   avatar_url: text(),
   email: text().unique().notNull(),
 
@@ -38,8 +38,6 @@ export const session = pgTable("session", {
     mode: "date",
   }).notNull(),
 });
-
-// TODO: tables for payment gateways
 
 export type User = typeof user.$inferSelect;
 export type Session = typeof session.$inferSelect;

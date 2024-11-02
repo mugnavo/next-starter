@@ -16,7 +16,7 @@ export default async function Home() {
 
       {user ? (
         <div className="flex flex-col gap-2">
-          <p>Welcome back, {user.name || user.first_name}!</p>
+          <p>Welcome back, {user.name}!</p>
           <Button asChild className="w-fit" size="lg">
             <Link href="/dashboard">Go to Dashboard</Link>
           </Button>
