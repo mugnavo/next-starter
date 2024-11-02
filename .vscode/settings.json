@@ -13,11 +13,7 @@
     "**/node_modules": true,
     "next-env.d.ts": true,
 
-    ".editorconfig": true,
-    ".eslintrc.json": true,
-    ".gitattributes": true,
-    ".prettierrc": true,
-    "postcss.config.mjs": true
+    ".gitattributes": true
   },
 
   // always choose typescript from node_modules

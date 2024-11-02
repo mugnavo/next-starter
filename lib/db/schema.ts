@@ -25,9 +25,7 @@ export const oauthAccount = pgTable(
       .notNull()
       .references(() => user.id),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.provider_id, table.provider_user_id] }),
-  })
+  (table) => [primaryKey({ columns: [table.provider_id, table.provider_user_id] })]
 );
 
 export const session = pgTable("session", {
