@@ -2,17 +2,7 @@
 
 Minimal Next.js starter kit.
 
-> [!NOTE]  
-> **Work in progress.**
->
-> _Currently being used as a generic Next.js boilerplate, but intended for future SaaS development._
->
-> TODO:
->
-> - Payment gateways (see below)
-> - Email & SMS providers
-> - Logging
-> - Analytics
+> based on [dotnize/tanstarter](https://github.com/dotnize/tanstarter)
 
 ### Tech stack:
 
