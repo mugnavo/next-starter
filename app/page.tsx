@@ -11,7 +11,9 @@ export default async function Home() {
       <h1 className="text-4xl font-bold">Mugnavo Next.js Starter</h1>
       <div className="flex items-center gap-2">
         This is an unprotected page:
-        <pre className="rounded-md border bg-slate-50 p-1">app/page.tsx</pre>
+        <pre className="rounded-md border bg-card p-1 text-card-foreground">
+          app/page.tsx
+        </pre>
       </div>
 
       {user ? (
@@ -39,16 +41,14 @@ export default async function Home() {
         </div>
       )}
 
-      <Button variant="outline" className="w-fit" asChild>
-        <a
-          href="https://github.com/mugnavo/next-starter"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="github.com/mugnavo/next-starter"
-        >
-          GitHub
-        </a>
-      </Button>
+      <a
+        className="text-muted-foreground underline hover:text-foreground"
+        href="https://github.com/mugnavo/next-starter"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        mugnavo/next-starter
+      </a>
     </div>
   );
 }
