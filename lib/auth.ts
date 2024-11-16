@@ -3,6 +3,7 @@ import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/enco
 import { Discord, GitHub, Google } from "arctic";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import { db } from "~/lib/db";
@@ -71,7 +72,9 @@ export async function validateSessionToken(token: string) {
   return { session, user };
 }
 
-export type SessionUser = NonNullable<Awaited<ReturnType<typeof validateSessionToken>>["user"]>;
+export type SessionUser = NonNullable<
+  Awaited<ReturnType<typeof validateSessionToken>>["user"]
+>;
 
 export async function invalidateSession(sessionId: string): Promise<void> {
   await db.delete(sessionTable).where(eq(sessionTable.id, sessionId));
@@ -87,7 +90,27 @@ export async function setSessionTokenCookie(token: string, expiresAt: Date) {
     path: "/",
   });
 }
+// OAuth2 Providers
+export const discord = new Discord(
+  process.env.DISCORD_CLIENT_ID as string,
+  process.env.DISCORD_CLIENT_SECRET as string,
+  process.env.DISCORD_REDIRECT_URI as string
+);
+export const github = new GitHub(
+  process.env.GITHUB_CLIENT_ID as string,
+  process.env.GITHUB_CLIENT_SECRET as string,
+  process.env.GITHUB_REDIRECT_URI || null
+);
+export const google = new Google(
+  process.env.GOOGLE_CLIENT_ID as string,
+  process.env.GOOGLE_CLIENT_SECRET as string,
+  process.env.GOOGLE_REDIRECT_URI as string
+);
 
+/**
+ * Retrieves the session and user data if valid.
+ * Can be used in server components, API route handlers, and server actions.
+ */
 export const getAuthSession = cache(async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value ?? null;
@@ -107,19 +130,19 @@ export const getAuthSession = cache(async () => {
   return { session, user };
 });
 
-// OAuth2 Providers
-export const discord = new Discord(
-  process.env.DISCORD_CLIENT_ID as string,
-  process.env.DISCORD_CLIENT_SECRET as string,
-  process.env.DISCORD_REDIRECT_URI as string
-);
-export const github = new GitHub(
-  process.env.GITHUB_CLIENT_ID as string,
-  process.env.GITHUB_CLIENT_SECRET as string,
-  process.env.GITHUB_REDIRECT_URI || null
-);
-export const google = new Google(
-  process.env.GOOGLE_CLIENT_ID as string,
-  process.env.GOOGLE_CLIENT_SECRET as string,
-  process.env.GOOGLE_REDIRECT_URI as string
-);
+/**
+ * Same as `getAuthSession`, but redirects to the specified URL or throws an error if the user is not authenticated.
+ *
+ * @param redirectUrl - Optional, throws an error if not provided and the user is not authenticated.
+ */
+export async function authGuard(redirectUrl?: string) {
+  const { session, user } = await getAuthSession();
+
+  if (!user && redirectUrl) {
+    return redirect(redirectUrl);
+  } else if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  return { session, user };
+}
