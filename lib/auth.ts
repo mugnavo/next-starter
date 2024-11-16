@@ -141,6 +141,7 @@ export async function authGuard(redirectUrl?: string) {
   if (!user && redirectUrl) {
     return redirect(redirectUrl);
   } else if (!user) {
+    // customize this as needed
     throw new Error("Unauthorized");
   }
 
