@@ -3,13 +3,17 @@
   "files.exclude": {
     ".gitattributes": true
   },
+
   "files.readonlyInclude": {
+    "**/.next/*/**": true,
     "pnpm-lock.yaml": true
   },
   "files.watcherExclude": {
+    "**/.next/*/**": true,
     "pnpm-lock.yaml": true
   },
   "search.exclude": {
+    "**/.next/**": true,
     "pnpm-lock.yaml": true
   },
 
