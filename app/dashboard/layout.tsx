@@ -8,7 +8,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   // NOTE:
-  // You should always perform authentication checks in each child route/page. Do not rely on parent layouts for auth guards.
+  // You should always perform authentication checks in each child route/page or in your data layer. Do not rely on parent layouts for auth guards.
   // See https://youtu.be/EGDD0rlBd8Q
   await authGuard("/signin");
 

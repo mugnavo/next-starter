@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-import type { NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME } from "./lib/auth";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  // https://lucia-auth.com/sessions/cookies/nextjs
   if (request.method === "GET") {
     const response = NextResponse.next();
     const token = request.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;

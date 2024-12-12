@@ -1,7 +1,7 @@
 import { authGuard } from "~/lib/auth";
 
 export default async function DashboardIndex() {
-  // Each child route/page should perform its own authentication checks.
+  // Perform authentication checks in each child route/page or in your data layer.
   // Do not rely on parent layouts for auth guards.
   const { user } = await authGuard("/signin");
 

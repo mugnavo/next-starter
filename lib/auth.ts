@@ -3,7 +3,7 @@ import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/enco
 import { Discord, GitHub, Google } from "arctic";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unauthorized } from "next/navigation";
 import { cache } from "react";
 
 import { db } from "~/lib/db";
@@ -131,18 +131,18 @@ export const getAuthSession = cache(async () => {
 });
 
 /**
- * Same as `getAuthSession`, but redirects to the specified URL or throws an error if the user is not authenticated.
+ * Same as `getAuthSession`, but redirects to the specified URL or `unauthorized.tsx` if the user is not authenticated.
  *
- * @param redirectUrl - Optional, throws an error if not provided and the user is not authenticated.
+ * @param redirectUrl - Optional, uses the `unauthorized.tsx` page if not provided.
  */
 export async function authGuard(redirectUrl?: string) {
   const { session, user } = await getAuthSession();
 
   if (!user && redirectUrl) {
-    return redirect(redirectUrl);
+    redirect(redirectUrl);
   } else if (!user) {
-    // customize this as needed
-    throw new Error("Unauthorized");
+    // https://nextjs.org/docs/app/api-reference/functions/unauthorized
+    unauthorized();
   }
 
   return { session, user };

@@ -7,7 +7,7 @@ export default async function AuthPage() {
   const { user } = await getAuthSession();
 
   if (user) {
-    return redirect("/dashboard");
+    redirect("/dashboard");
   }
 
   return (
