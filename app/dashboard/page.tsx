@@ -1,4 +1,4 @@
-import { authGuard } from "~/lib/auth";
+import { authGuard } from "~/lib/server/auth";
 
 export default async function DashboardIndex() {
   // Perform authentication checks in each child route/page or in your data layer.

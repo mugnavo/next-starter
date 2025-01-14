@@ -1,10 +1,17 @@
+import { headers } from "next/headers";
 import Link from "next/link";
 
 import { Button } from "~/components/ui/button";
-import { getAuthSession } from "~/lib/auth";
+import { auth, getAuthSession } from "~/lib/server/auth";
 
 export default async function Home() {
-  const { user } = await getAuthSession();
+  const session = await getAuthSession();
+
+  async function signOut() {
+    "use server";
+
+    await auth.api.signOut({ headers: await headers() });
+  }
 
   return (
     <div className="flex flex-col gap-4 p-6">
@@ -16,17 +23,17 @@ export default async function Home() {
         </pre>
       </div>
 
-      {user ? (
+      {session ? (
         <div className="flex flex-col gap-2">
-          <p>Welcome back, {user.name}!</p>
+          <p>Welcome back, {session.user.name}!</p>
           <Button asChild className="w-fit" size="lg">
             <Link href="/dashboard">Go to Dashboard</Link>
           </Button>
           <div>
             More data:
-            <pre>{JSON.stringify(user, null, 2)}</pre>
+            <pre>{JSON.stringify(session.user, null, 2)}</pre>
           </div>
-          <form method="POST" action="/api/auth/logout">
+          <form action={signOut}>
             <Button type="submit" className="w-fit" variant="destructive" size="lg">
               Sign out
             </Button>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { authGuard } from "~/lib/auth";
+import { authGuard } from "~/lib/server/auth";
 
 export default async function DashboardLayout({
   children,
