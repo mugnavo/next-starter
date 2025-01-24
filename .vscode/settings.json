@@ -6,15 +6,18 @@
 
   "files.readonlyInclude": {
     "**/.next/*/**": true,
-    "pnpm-lock.yaml": true
+    "pnpm-lock.yaml": true,
+    "bun.lock": true
   },
   "files.watcherExclude": {
     "**/.next/*/**": true,
-    "pnpm-lock.yaml": true
+    "pnpm-lock.yaml": true,
+    "bun.lock": true
   },
   "search.exclude": {
     "**/.next/**": true,
-    "pnpm-lock.yaml": true
+    "pnpm-lock.yaml": true,
+    "bun.lock": true
   },
 
   // always choose typescript from node_modules
