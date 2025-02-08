@@ -50,18 +50,26 @@ export const auth = betterAuth({
 /**
  * Retrieves the session and user data if valid.
  * Can be used in server components, API route handlers, and server actions.
+ *
+ * @param disableCookieCache - Fetch the latest session from the database, ignoring the cookie cache.
  */
-export const getAuthSession = cache(async () => {
-  return auth.api.getSession({ headers: await headers() });
+export const getAuthSession = cache(async (disableCookieCache = false) => {
+  return auth.api.getSession({
+    headers: await headers(),
+    query: {
+      disableCookieCache,
+    },
+  });
 });
 
 /**
  * Same as `getAuthSession`, but redirects to the specified URL or `unauthorized.tsx` if the user is not authenticated.
  *
  * @param redirectUrl - Optional, uses the `unauthorized.tsx` page if not provided.
+ * @param disableCookieCache - Fetch the latest session from the database, ignoring the cookie cache.
  */
-export async function authGuard(redirectUrl?: string) {
-  const session = await getAuthSession();
+export async function authGuard(redirectUrl?: string | null, disableCookieCache = false) {
+  const session = await getAuthSession(disableCookieCache);
 
   if (!session && redirectUrl) {
     redirect(redirectUrl);
