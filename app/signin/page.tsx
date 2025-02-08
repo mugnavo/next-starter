@@ -1,7 +1,6 @@
-import { getAuthSession } from "~/lib/server/auth";
-
 import { redirect } from "next/navigation";
 
+import { getAuthSession } from "~/lib/server/auth";
 import { SignInButton } from "./SignInButton";
 
 const callbackURL = "/dashboard";

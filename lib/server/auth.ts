@@ -17,6 +17,14 @@ export const auth = betterAuth({
   }),
   plugins: [nextCookies()],
 
+  // https://www.better-auth.com/docs/concepts/session-management#session-caching
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes
+    },
+  },
+
   // https://www.better-auth.com/docs/concepts/oauth
   socialProviders: {
     github: {
@@ -37,14 +45,6 @@ export const auth = betterAuth({
   // emailAndPassword: {
   //   enabled: true,
   // },
-
-  // https://www.better-auth.com/docs/concepts/session-management#session-caching
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60, // 5 minutes
-    },
-  },
 });
 
 /**

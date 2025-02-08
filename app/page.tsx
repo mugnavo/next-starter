@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 
-import ThemeToggle from "~/components/ThemeToggle";
-import { Button } from "~/components/ui/button";
+import ThemeToggle from "~/lib/components/ThemeToggle";
+import { Button } from "~/lib/components/ui/button";
 import { auth, getAuthSession } from "~/lib/server/auth";
 
 export default async function Home() {
