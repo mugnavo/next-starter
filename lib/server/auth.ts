@@ -11,13 +11,13 @@ import { cache } from "react";
 import { db } from "./db";
 
 export const auth = betterAuth({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
   plugins: [nextCookies()],
-  // emailAndPassword: {
-  //   enabled: true,
-  // },
+
+  // https://www.better-auth.com/docs/concepts/oauth
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -32,7 +32,19 @@ export const auth = betterAuth({
       clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     },
   },
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+
+  // https://www.better-auth.com/docs/authentication/email-password
+  // emailAndPassword: {
+  //   enabled: true,
+  // },
+
+  // https://www.better-auth.com/docs/concepts/session-management#session-caching
+  // session: {
+  //   cookieCache: {
+  //     enabled: true,
+  //     maxAge: 5 * 60, // 5 minutes
+  //   },
+  // },
 });
 
 /**

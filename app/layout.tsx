@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
 
 import "~/styles/globals.css";
-
-import { cn } from "~/lib/utils";
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
 
 export const metadata: Metadata = {
   title: "Mugnavo Next.js Starter",
@@ -21,14 +13,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased">
         {children}
+
+        <script
+          id="check-theme"
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.toggle(
+                      'dark',
+                      localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    )`,
+          }}
+        ></script>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 
+import ThemeToggle from "~/components/ThemeToggle";
 import { Button } from "~/components/ui/button";
 import { auth, getAuthSession } from "~/lib/server/auth";
 
@@ -47,6 +48,8 @@ export default async function Home() {
           </Button>
         </div>
       )}
+
+      <ThemeToggle />
 
       <a
         className="text-muted-foreground underline hover:text-foreground"

@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, type ButtonProps } from "~/components/ui/button";
+import { type ComponentProps } from "react";
+import { Button } from "~/components/ui/button";
 import authClient from "~/lib/utils/auth-client";
 
-interface Props extends ButtonProps {
+interface Props extends ComponentProps<typeof Button> {
   provider: "discord" | "google" | "github";
   label: string;
   callbackURL?: string;
