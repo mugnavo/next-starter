@@ -1,9 +1,4 @@
 {
-  // hide misc files that we most likely don't need to see
-  "files.exclude": {
-    ".gitattributes": true
-  },
-
   "files.readonlyInclude": {
     "**/.next/*/**": true,
     "pnpm-lock.yaml": true,
