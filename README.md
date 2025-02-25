@@ -20,9 +20,7 @@ Minimal Next.js starter based on [dotnize/tanstarter](https://github.com/dotnize
 
 3. Create a `.env` file based on [`.env.example`](./.env.example).
 
-4. In your OAuth2 apps, set the callback/redirect URIs to `http://localhost:3000/api/auth/callback/<provider>` (e.g. http://localhost:3000/api/auth/callback/github).
-
-5. Push the schema to your database with drizzle-kit:
+4. Push the schema to your database with drizzle-kit:
 
    ```bash
    pnpm db push # npm run db push
@@ -30,7 +28,7 @@ Minimal Next.js starter based on [dotnize/tanstarter](https://github.com/dotnize
 
    https://orm.drizzle.team/docs/migrations
 
-6. Run the development server:
+5. Run the development server:
 
    ```bash
    pnpm dev # npm run dev
