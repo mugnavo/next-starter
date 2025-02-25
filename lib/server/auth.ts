@@ -1,5 +1,3 @@
-import "server-only";
-
 import { headers } from "next/headers";
 import { redirect, unauthorized } from "next/navigation";
 
