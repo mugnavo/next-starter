@@ -37,3 +37,7 @@ Minimal Next.js starter based on [dotnize/tanstarter](https://github.com/dotnize
    The development server should be now running at [http://localhost:3000](http://localhost:3000).
 
    For other scripts, check the [package.json](./package.json#L5) file.
+
+## Issue watchlist
+
+- https://github.com/shadcn-ui/ui/discussions/6714 - We're using the `canary` version of shadcn/ui for Tailwind v4 support.
