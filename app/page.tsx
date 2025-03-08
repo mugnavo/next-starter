@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import ThemeToggle from "~/lib/components/ThemeToggle";
 import { Button } from "~/lib/components/ui/button";
@@ -12,6 +13,9 @@ export default async function Home() {
     "use server";
 
     await auth.api.signOut({ headers: await headers() });
+
+    // refresh page
+    redirect("/");
   }
 
   return (
