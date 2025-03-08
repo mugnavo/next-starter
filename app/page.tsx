@@ -1,22 +1,12 @@
-import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
+import { SignOutButton } from "~/lib/components/SignOutButton";
 import ThemeToggle from "~/lib/components/ThemeToggle";
 import { Button } from "~/lib/components/ui/button";
-import { auth, getAuthSession } from "~/lib/server/auth";
+import { getAuthSession } from "~/lib/server/auth";
 
 export default async function Home() {
   const session = await getAuthSession();
-
-  async function signOut() {
-    "use server";
-
-    await auth.api.signOut({ headers: await headers() });
-
-    // refresh page
-    redirect("/");
-  }
 
   return (
     <div className="flex flex-col gap-4 p-6">
@@ -38,11 +28,7 @@ export default async function Home() {
             More data:
             <pre>{JSON.stringify(session.user, null, 2)}</pre>
           </div>
-          <form action={signOut}>
-            <Button type="submit" className="w-fit" variant="destructive" size="lg">
-              Sign out
-            </Button>
-          </form>
+          <SignOutButton />
         </div>
       ) : (
         <div className="flex flex-col gap-2">
