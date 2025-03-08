@@ -41,3 +41,5 @@ Minimal Next.js starter based on [dotnize/tanstarter](https://github.com/dotnize
 ## Issue watchlist
 
 - https://github.com/shadcn-ui/ui/discussions/6714 - We're using the `canary` version of shadcn/ui for Tailwind v4 support.
+
+For more information, refer to the [Next.js documentation](https://nextjs.org/docs) and [dotnize/tanstarter readme](https://github.com/dotnize/tanstarter/blob/main/README.md), which this starter is based on.
