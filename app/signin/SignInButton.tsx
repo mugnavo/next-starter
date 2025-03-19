@@ -20,7 +20,6 @@ export function SignInButton({ provider, label, callbackURL, ...props }: Props) 
         })
       }
       type="button"
-      variant="outline"
       size="lg"
       {...props}
     >
