@@ -1,6 +1,9 @@
+> [!IMPORTANT]  
+> This template is unmaintained. Check out [react-tanstarter](https://github.com/dotnize/react-tanstarter) instead.
+
 # mugnavo/next-starter
 
-Minimal Next.js starter based on [dotnize/tanstarter](https://github.com/dotnize/tanstarter).
+Minimal Next.js starter based on [dotnize/react-tanstarter](https://github.com/dotnize/react-tanstarter).
 
 - [Next.js 15](https://nextjs.org/) + [React 19](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
@@ -63,4 +66,4 @@ These scripts in [package.json](./package.json#L5) use **pnpm** by default, but 
 - [`authGuard(redirectUrl?: string)`](./lib/server/auth.ts#L69) - Same as `getAuthSession`, but redirects to the specified URL or unauthorized.tsx if the user is not authenticated.
 - [`ThemeToggle.tsx`](./lib/components/ThemeToggle.tsx) - A simple component to toggle between light and dark mode. ([#7](https://github.com/dotnize/tanstarter/issues/7))
 
-For more information, refer to the [Next.js documentation](https://nextjs.org/docs) and [dotnize/tanstarter readme](https://github.com/dotnize/tanstarter/blob/main/README.md), which this starter is based on.
+For more information, refer to the [Next.js documentation](https://nextjs.org/docs) and [react-tanstarter readme](https://github.com/dotnize/react-tanstarter/blob/main/README.md), which this starter is based on.
