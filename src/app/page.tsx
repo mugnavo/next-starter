@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-import { SignOutButton } from "~/lib/components/SignOutButton";
-import ThemeToggle from "~/lib/components/ThemeToggle";
-import { Button } from "~/lib/components/ui/button";
-import { getAuthSession } from "~/lib/server/auth";
+import { SignOutButton } from "@/components/sign-out-btn";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { getAuthSession } from "@/lib/auth/auth";
 
 export default async function Home() {
   const session = await getAuthSession();
@@ -13,7 +13,7 @@ export default async function Home() {
       <h1 className="text-4xl font-bold">Mugnavo Next.js Starter</h1>
       <div className="flex items-center gap-2">
         This is an unprotected page:
-        <pre className="rounded-md border bg-card p-1 text-card-foreground">
+        <pre className="bg-card text-card-foreground rounded-md border p-1">
           app/page.tsx
         </pre>
       </div>
@@ -42,7 +42,7 @@ export default async function Home() {
       <ThemeToggle />
 
       <a
-        className="text-muted-foreground underline hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground underline"
         href="https://github.com/mugnavo/next-starter"
         target="_blank"
         rel="noreferrer noopener"

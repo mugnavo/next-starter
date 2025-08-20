@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { authGuard } from "@/lib/auth/auth";
 import Link from "next/link";
-import { Button } from "~/lib/components/ui/button";
-import { authGuard } from "~/lib/server/auth";
 
 export default async function DashboardLayout({
   children,
@@ -15,7 +15,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex flex-col gap-4 p-4">
       <h1 className="text-4xl font-bold">Dashboard Layout</h1>
-      <pre className="rounded-md border bg-card p-1 text-card-foreground">
+      <pre className="bg-card text-card-foreground rounded-md border p-1">
         app/dashboard/layout.tsx
       </pre>
 
