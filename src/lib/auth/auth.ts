@@ -10,6 +10,9 @@ import { cache } from "react";
 
 export const auth = betterAuth({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  telemetry: {
+    enabled: false,
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
@@ -62,8 +65,13 @@ export const getAuthSession = cache(async (disableCookieCache = false) => {
  * @param redirectUrl - Optional, uses the `unauthorized.tsx` page if not provided.
  * @param disableCookieCache - Fetch the latest session from the database, ignoring the cookie cache.
  */
-export async function authGuard(redirectUrl?: string | null, disableCookieCache = false) {
-  const session = await getAuthSession(disableCookieCache);
+export async function authGuard(
+  redirectUrl?: string | null,
+  disableCookieCache?: boolean,
+) {
+  const session = disableCookieCache
+    ? await getAuthSession(true)
+    : await getAuthSession();
 
   if (!session && redirectUrl) {
     redirect(redirectUrl);

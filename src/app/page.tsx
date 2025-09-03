@@ -1,13 +1,12 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { SignOutButton } from "@/components/sign-out-btn";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { getAuthSession } from "@/lib/auth/auth";
 
-export default async function Home() {
-  const session = await getAuthSession();
-
+export default function Home() {
   return (
     <div className="flex flex-col gap-4 p-6">
       <h1 className="text-4xl font-bold">Mugnavo Next.js Starter</h1>
@@ -18,26 +17,9 @@ export default async function Home() {
         </pre>
       </div>
 
-      {session ? (
-        <div className="flex flex-col gap-2">
-          <p>Welcome back, {session.user.name}!</p>
-          <Button asChild className="w-fit" size="lg">
-            <Link href="/dashboard">Go to Dashboard</Link>
-          </Button>
-          <div>
-            More data:
-            <pre>{JSON.stringify(session.user, null, 2)}</pre>
-          </div>
-          <SignOutButton />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <p>You are not signed in.</p>
-          <Button asChild className="w-fit" size="lg">
-            <Link href="/signin">Sign in</Link>
-          </Button>
-        </div>
-      )}
+      <Suspense fallback={<div>Loading user...</div>}>
+        <UserAction />
+      </Suspense>
 
       <ThemeToggle />
 
@@ -49,6 +31,31 @@ export default async function Home() {
       >
         mugnavo/next-starter
       </a>
+    </div>
+  );
+}
+
+async function UserAction() {
+  const session = await getAuthSession();
+
+  return session ? (
+    <div className="flex flex-col gap-2">
+      <p>Welcome back, {session.user.name}!</p>
+      <Button asChild className="w-fit" size="lg">
+        <Link href="/dashboard">Go to Dashboard</Link>
+      </Button>
+      <div>
+        More data:
+        <pre>{JSON.stringify(session.user, null, 2)}</pre>
+      </div>
+      <SignOutButton />
+    </div>
+  ) : (
+    <div className="flex flex-col gap-2">
+      <p>You are not signed in.</p>
+      <Button asChild className="w-fit" size="lg">
+        <Link href="/signin">Sign in</Link>
+      </Button>
     </div>
   );
 }
