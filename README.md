@@ -10,12 +10,17 @@ Minimal Next.js starter based on [dotnize/react-tanstarter](https://github.com/d
 
 ## Getting Started
 
-1. [Use this template](https://github.com/new?template_name=next-starter&template_owner=mugnavo) or clone this repository.
+1. [Use this template](https://github.com/new?template_name=next-starter&template_owner=mugnavo) or clone this repository with gitpick:
+
+   ```bash
+   npx gitpick mugnavo/next-tanstarter myapp
+   cd myapp
+   ```
 
 2. Install dependencies:
 
    ```bash
-   pnpm install # npm install
+   pnpm install
    ```
 
 3. Create a `.env` file based on [`.env.example`](./.env.example).
@@ -23,7 +28,7 @@ Minimal Next.js starter based on [dotnize/react-tanstarter](https://github.com/d
 4. Push the schema to your database with drizzle-kit:
 
    ```bash
-   pnpm db push # npm run db push
+   pnpm db push
    ```
 
    https://orm.drizzle.team/docs/migrations
@@ -31,7 +36,7 @@ Minimal Next.js starter based on [dotnize/react-tanstarter](https://github.com/d
 5. Run the development server:
 
    ```bash
-   pnpm dev # npm run dev
+   pnpm dev
    ```
 
    The development server should be now running at [http://localhost:3000](http://localhost:3000).
@@ -40,7 +45,7 @@ Minimal Next.js starter based on [dotnize/react-tanstarter](https://github.com/d
 
 #### Scripts
 
-These scripts in [package.json](./package.json#L4) use **pnpm** by default, but you can modify them to use your preferred package manager.
+We use **pnpm** by default, but you can modify these scripts in [package.json](./package.json) to use your preferred package manager.
 
 - **`auth:generate`** - Regenerate the [auth db schema](./src/lib/db/schema/auth.schema.ts) if you've made changes to your Better Auth [config](./src/lib/auth/auth.ts).
 - **`db`** - Run drizzle-kit commands. (e.g. `pnpm db generate` to generate a migration)
@@ -53,4 +58,4 @@ These scripts in [package.json](./package.json#L4) use **pnpm** by default, but 
 - [`authGuard(redirectUrl?: string)`](./src/lib/auth/auth.ts#L65) - Same as `getAuthSession`, but redirects to the specified URL or unauthorized.tsx if the user is not authenticated.
 - [`theme-toggle.tsx`](./src/components/theme-toggle.tsx) - A simple component to toggle between light and dark mode.
 
-For more information, refer to the [Next.js documentation](https://nextjs.org/docs) and [react-tanstarter readme](https://github.com/dotnize/react-tanstarter/blob/main/README.md), which this starter is based on.
+For more information, you may refer to the [Next.js documentation](https://nextjs.org/docs) and [react-tanstarter readme](https://github.com/dotnize/react-tanstarter/blob/main/README.md), which this starter is based on.
