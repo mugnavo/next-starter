@@ -259,6 +259,7 @@ function SidebarTrigger({
 
   return (
     <Button
+      type="button"
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
@@ -283,6 +284,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
+      type="button"
       aria-label="Toggle Sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
@@ -596,6 +598,7 @@ function SidebarMenuSkeleton({
 }) {
   // Random width between 50 to 90%.
   const width = React.useMemo(() => {
+    // eslint-disable-next-line react-hooks/purity
     return `${Math.floor(Math.random() * 40) + 50}%`;
   }, []);
 

@@ -1,18 +1,22 @@
-import { FlatCompat } from "@eslint/eslintrc";
 import pluginQuery from "@tanstack/eslint-plugin-query";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 import eslintConfigPrettier from "eslint-config-prettier";
+import { defineConfig, globalIgnores } from "eslint/config";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
   eslintConfigPrettier,
   ...pluginQuery.configs["flat/recommended"],
-  {
-    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
-  },
-];
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
 
 export default eslintConfig;
