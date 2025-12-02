@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { redirect, unauthorized } from "next/navigation";
 
-import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 
 import { db } from "@/lib/db";
@@ -41,6 +41,11 @@ export const auth = betterAuth({
   // https://www.better-auth.com/docs/authentication/email-password
   emailAndPassword: {
     enabled: true,
+  },
+
+  experimental: {
+    // https://www.better-auth.com/docs/adapters/drizzle#joins-experimental
+    joins: true,
   },
 });
 
