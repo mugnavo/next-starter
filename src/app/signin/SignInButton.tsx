@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import authClient from "@/lib/auth/auth-client";
-import { type ComponentProps } from "react";
+import type { HTMLAttributes } from "react";
 
-interface Props extends ComponentProps<typeof Button> {
+interface Props extends HTMLAttributes<HTMLButtonElement> {
   provider: "discord" | "google" | "github";
   label: string;
   callbackURL?: string;

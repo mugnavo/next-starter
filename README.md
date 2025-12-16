@@ -4,7 +4,7 @@ Minimal Next.js starter based on [dotnize/react-tanstarter](https://github.com/d
 
 - [Next.js 16](https://nextjs.org/) + [React 19](https://react.dev/) + [React Compiler](https://react.dev/learn/react-compiler)
 - [TanStack Query](https://tanstack.com/query/latest)
-- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) + [Base UI](https://base-ui.com/)
 - [Drizzle ORM](https://orm.drizzle.team/) + PostgreSQL
 - [Better Auth](https://www.better-auth.com/)
 

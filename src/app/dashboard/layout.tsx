@@ -19,8 +19,8 @@ export default async function DashboardLayout({
         app/dashboard/layout.tsx
       </pre>
 
-      <Button asChild className="w-fit" size="lg">
-        <Link href="/">Back to Home</Link>
+      <Button render={<Link href="/" />} className="w-fit" size="lg">
+        Back to Home
       </Button>
 
       {children}
