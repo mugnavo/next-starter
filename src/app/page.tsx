@@ -41,7 +41,12 @@ async function UserAction() {
   return session ? (
     <div className="flex flex-col gap-2">
       <p>Welcome back, {session.user.name}!</p>
-      <Button render={<Link href="/dashboard" />} className="w-fit" size="lg">
+      <Button
+        render={<Link href="/dashboard" />}
+        className="w-fit"
+        size="lg"
+        nativeButton={false}
+      >
         Go to Dashboard
       </Button>
       <div>
@@ -53,7 +58,12 @@ async function UserAction() {
   ) : (
     <div className="flex flex-col gap-2">
       <p>You are not signed in.</p>
-      <Button render={<Link href="/signin" />} className="w-fit" size="lg">
+      <Button
+        render={<Link href="/signin" />}
+        className="w-fit"
+        size="lg"
+        nativeButton={false}
+      >
         Sign in
       </Button>
     </div>

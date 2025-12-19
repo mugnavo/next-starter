@@ -19,7 +19,7 @@ export default async function DashboardLayout({
         app/dashboard/layout.tsx
       </pre>
 
-      <Button render={<Link href="/" />} className="w-fit" size="lg">
+      <Button render={<Link href="/" />} className="w-fit" size="lg" nativeButton={false}>
         Back to Home
       </Button>
 

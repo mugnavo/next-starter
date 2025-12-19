@@ -16,9 +16,6 @@ const nextConfig: NextConfig = {
       dynamic: 60, // 1 minute
       static: 300, // 5 minutes
     },
-
-    // https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopackFileSystemCache
-    turbopackFileSystemCacheForDev: true,
   },
 };
 
